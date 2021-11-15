@@ -18,28 +18,59 @@ local function into_iter(t)
       end
     else
       -- Table is a Hashmap
+      return function(t, k)
+        return pairs({})(t, k)
+      end, t, nil
+    end
+  elseif type(t) == "string" then
+    local i = 0
+    return function()
+      i = i + 1
+      if i <= #t then
+        return t:sub(i, i)
+      end
     end
   end
 end
 
-local xs = into_iter({ 1, 2, 3 })
+function Iterator.from(t)
+  local buf = setmetatable({}, Iterator)
+  buf.fn = into_iter(t)
+  buf.t = t
 
-for x in xs do
-  print(x)
+  if type(t) == "table" then
+    if #t > 0 then
+      -- Array iterator
+      buf.init = 0
+    else
+      -- Hashmap iterator
+      buf.init = nil
+    end
+  elseif type(t) == "string" then
+    -- String iterator
+    buf.init = 0
+  end
+
+  return buf
 end
 
-local hashmap = { a = 1, b = 2, c = 3 }
+-- local xs = into_iter({ 1, 2, 3 })
+--
+-- for x in xs do
+--   print(x)
+-- end
+--
+-- local hashmap = { a = 1, b = 2, c = 3 }
+--
+-- for k, v in into_iter(hashmap) do
+--   print(k, v)
+-- end
+-- for char in into_iter("dturnip") do
+--   print(char)
+-- end
 
-local pairs_gen = pairs({})
-
-local function map_gen(tab, key)
-  local value
-  local key, value = pairs_gen(tab, key)
-  return key, value
-end
-
-for k, v in map_gen, hashmap, nil do
-  print(k, v)
-end
+local xs = { 2, 4, 6, 8, 10 }
+local xs_iter = Iterator.from(xs)
+table.display(xs_iter)
 
 return Iterator
