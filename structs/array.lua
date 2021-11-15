@@ -1,9 +1,19 @@
-local utils = require("utils")
+local tableutils = require("utils.tableutils")
 
-table.display = utils.display
+table.display = tableutils.display
 
 local Array = {}
 Array.__index = Array
+
+local function iter(t)
+	local i = 0
+	return function()
+		i = i + 1
+		if i <= #t then
+			return t[i]
+		end
+	end
+end
 
 function Array:dbg()
 	table.display(self)
@@ -11,8 +21,8 @@ end
 
 function Array:map(func)
 	local buf = {}
-	for _, v in ipairs(self) do
-		table.insert(buf, func(v))
+	for el in iter(self) do
+		table.insert(buf, func(el))
 	end
 	return Array.new(buf)
 end
@@ -36,22 +46,5 @@ local mappedIntArr = intArr
 	end)
 
 mappedIntArr:dbg()
-
--- local function into_iter(t, i)
--- 	i = i or 0
--- 	i = i + 1
--- 	local curr = t[i]
--- 	if curr then
--- 		return i, curr
--- 	end
--- end
---
--- table.into_iter = function(t)
--- 	return into_iter, t, 0
--- end
---
--- for v in table.into_iter(mappedIntArr) do
--- 	print(v)
--- end
 
 return Array
