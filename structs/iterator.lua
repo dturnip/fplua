@@ -1,7 +1,3 @@
-local tableutils = require("utils.tableutils")
-
-table.display = tableutils.display
-
 local Iterator = {}
 Iterator.__index = Iterator
 
@@ -54,23 +50,72 @@ function Iterator.from(t)
   return buf
 end
 
--- local xs = into_iter({ 1, 2, 3 })
---
--- for x in xs do
---   print(x)
--- end
---
--- local hashmap = { a = 1, b = 2, c = 3 }
---
--- for k, v in into_iter(hashmap) do
---   print(k, v)
--- end
--- for char in into_iter("dturnip") do
---   print(char)
--- end
+function Iterator:dbg()
+  table.display(self)
+end
 
-local xs = { 2, 4, 6, 8, 10 }
-local xs_iter = Iterator.from(xs)
-table.display(xs_iter)
+function Iterator:iter()
+  return self.fn, self.t, self.init
+end
+
+function Iterator:foreach(fn)
+  for k, v in self:iter() do
+    if v then
+      -- Hashmap iterator
+      fn(k, v)
+    else
+      -- Array iterator
+      fn(k)
+    end
+  end
+end
+
+function Iterator:map(fn)
+  if type(self.t) ~= "table" then
+    error("[ERROR]: Iterator:map can only be used on table iterators")
+    return
+  end
+
+  local buf = {}
+
+  for k, v in self:iter() do
+    if v then
+      -- Hashmap iterator
+      local mapped_k, mapped_v = fn(k, v)
+      buf[mapped_k] = mapped_v
+    else
+      -- Array iterator
+      local mapped_el = fn(k)
+      table.insert(buf, mapped_el)
+    end
+  end
+
+  return Iterator.from(buf)
+end
+
+function Iterator:filter(fn)
+  if type(self.t) ~= "table" then
+    error("[ERROR]: Iterator:filter can only be used on table iterators")
+    return
+  end
+
+  local buf = {}
+
+  for k, v in self:iter() do
+    if v then
+      -- Hashmap iterator
+      if fn(k, v) then
+        buf[k] = v
+      end
+    else
+      -- Array iterator
+      if fn(k) then
+        table.insert(buf, k)
+      end
+    end
+  end
+
+  return Iterator.from(buf)
+end
 
 return Iterator
