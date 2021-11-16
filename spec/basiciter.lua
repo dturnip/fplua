@@ -7,9 +7,9 @@ table.dcopy = tableutils.dcopy
 local M = {}
 
 function M.test_metatable()
-  local nil_iterator = Iterator.from(nil)
+  local char_iterator = Iterator.from("test")
 
-  assert(getmetatable(nil_iterator) == Iterator)
+  assert(getmetatable(char_iterator) == Iterator)
 end
 
 function M.test_array_iterate()
@@ -26,7 +26,7 @@ end
 
 function M.test_hashmap_iterate()
   local scores = Iterator.from({
-    ["raddish"] = 95,
+    ["radish"] = 95,
     ["turnip"] = 100,
     ["parsnip"] = 80,
   })
@@ -89,7 +89,7 @@ function M.test_array_map()
     end)
 
   -- This works because it's a single dimensional array
-  assert(table.concat(squared_xs.t) == table.concat({
+  assert(table.concat(squared_xs.obj) == table.concat({
     1 ^ 2 + 1,
     2 ^ 2 + 1,
     3 ^ 2 + 1,
@@ -99,7 +99,21 @@ function M.test_array_map()
 end
 
 function M.test_hashmap_map()
-  -- TODO: Unit test right here
+  local scores = Iterator.from({
+    ["radish"] = 95,
+    ["turnip"] = 100,
+    ["parsnip"] = 80,
+  })
+
+  local scores_plus_one = scores:map(function(k, v)
+    return k .. "1", v + 1
+  end)
+
+  assert(
+    scores_plus_one.obj["turnip1"] == 101
+      and scores_plus_one.obj["radish1"] == 96
+      and scores_plus_one.obj["parsnip1"] == 81
+  )
 end
 
 function M.test_array_filter()
@@ -109,7 +123,7 @@ function M.test_array_filter()
     return x % 2 == 0
   end)
 
-  assert(table.concat(even_xs.t) == table.concat({
+  assert(table.concat(even_xs.obj) == table.concat({
     2,
     4,
     6,
@@ -119,7 +133,31 @@ function M.test_array_filter()
 end
 
 function M.test_hashmap_filter()
-  -- TODO: Unit test right here
+  local scores = Iterator.from({
+    A = 15,
+    B = 38,
+    C = 59,
+    D = 92,
+    E = 18,
+    F = 49,
+    G = 95,
+    H = 83,
+    I = 74,
+    J = 41,
+  })
+
+  local pass_min = 50
+  local passes = scores:filter(function(k, v)
+    return v >= pass_min
+  end)
+
+  local ct = 0
+
+  passes:foreach(function()
+    ct = ct + 1
+  end)
+
+  assert(ct == 5)
 end
 
 M.test_metatable()
@@ -128,4 +166,6 @@ M.test_hashmap_iterate()
 M.test_array_foreach()
 M.test_hashmap_foreach()
 M.test_array_map()
+M.test_hashmap_map()
 M.test_array_filter()
+M.test_hashmap_filter()
