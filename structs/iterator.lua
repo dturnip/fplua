@@ -1,4 +1,4 @@
-local error = require("utils.error")
+local error = require("fplua.utils.error")
 
 ---@class Iterator
 local Iterator = {}
@@ -98,7 +98,7 @@ end
 --
 --  print(sum) --> 6
 --```
----@return fun()
+---@return fun(t: any, k: any): any, any
 ---@return string | table
 ---@return number | nil
 function Iterator:iter()
@@ -131,7 +131,8 @@ end
 --
 --  file:close()
 --```
----@param fn fun()
+---@generic K, V
+---@param fn fun(k: K, v: V | nil): void
 function Iterator:foreach(fn)
   for k, v in self:iter() do
     if v then
@@ -145,8 +146,31 @@ function Iterator:foreach(fn)
 end
 
 ---Returns a new Iterator after transforming the values from an Iterator. Since Iterator is a functor, map and alike methods can be chained.
+---```lua
+--  local colours = {
+--    { colour = "red", hex = "FF0000" },
+--    { colour = "green", hex = "00FF00" },
+--    { colour = "blue", hex = "0000FF" }
+--  }
+--
+--  local colour_map = Iterator.from(colours)
+--    :map(function(pair)
+--      local ret = {}
+--      ret[pair.colour] = pair.hex
+--      return ret
+--    end)
+--    :collect()
+--
+--  --[[
+--  -- {
+--  --   { "red" = "FF0000" },
+--  --   { "green" = "00FF00" },
+--  --   { "blue" = "0000FF" }
+--  -- }
+--  --]]
+--```
 ---@generic K, V
----@param fn fun(k: K, v: V): any
+---@param fn fun(k: K, v: V | nil): any, any
 ---@return Iterator
 function Iterator:map(fn)
   if type(self.obj) ~= "table" then
@@ -171,6 +195,17 @@ function Iterator:map(fn)
   return Iterator.from(buf)
 end
 
+---Extracts each value from the operand Iterator which returns true after being passed into the function \`fn\` and returns a new Iterator with these.
+---```lua
+--  local xs = {1, 2, 3, 4, 5, 6, 7, 8}
+--
+--  local evens = Iterator.from(xs)
+--    :filter(function(x) return x % 2 == 0 end)
+--    :collect()
+--```
+---@generic K, V
+---@param fn fun(k: K, v: V | nil): boolean
+---@return Iterator
 function Iterator:filter(fn)
   if type(self.obj) ~= "table" then
     error("Iterator:filter() can only be used on Array or Hashmap iterators", 2)
