@@ -1,5 +1,5 @@
-local tableutils = require("utils.tableutils")
-local Iterator = require("structs.iterator")
+local tableutils = require("fplua.utils.tableutils")
+local Iterator = require("fplua.structs.iterator")
 
 table.display = tableutils.display
 table.dcopy = tableutils.dcopy
