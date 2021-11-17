@@ -4,11 +4,11 @@ fplua is an experimental pure Lua library introducing functional programming uti
 
 - [x] **Declarative:** Stop writing your own iterators and loops! fplua comes with a bunch of functions that will save you time and boost code readability.
 - [x] **Familiar Syntax:** fplua's syntax and flow is inspired by Rust Iterators and Java Streams.
-- [x] **Easy And Safe:** fplua is built with pure Lua and has no external dependencies.
+- [x] **Simple And Safe:** fplua is created with pure Lua and does not rely on any external dependencies.
 
 ## Installation
 
-Note: fplua is created and tested with Lua 5.4. Compatability with previous versions of Lua hasn't been tested, but it should work. Also, if you wish to get intellisense from your text editor/language server, you can clone this library into your project directory instead.
+**NOTE:** fplua is created and tested with Lua 5.4. Compatability with previous versions of Lua hasn't been tested, but it should work. Also, if you wish to get intellisense from your text editor/language server, you can clone this library into your project directory instead.
 
 To install fplua:
 
@@ -26,7 +26,7 @@ git clone https://github.com/dturnip/fplua.git /usr/local/share/lua/5.4/fplua
 
 ## Examples
 
-Filterin out even numbers from an array of integers
+Filtering out even numbers from an array of integers
 
 ```lua
 local Iterator = require("fplua.structs.iterator")
