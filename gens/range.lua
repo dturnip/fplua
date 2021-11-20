@@ -2,7 +2,17 @@ local Iterator = require("fplua.structs.iterator")
 
 --- Returns an iterator of a numerical sequence with an interval. The starting point is included, and the ending point is excluded.
 ---```lua
+---  for x in range(4) do
+---    --
+---  end -- 1, 2, 3
 ---
+---  for x in range(2, -3) do
+---    --
+---  end -- 2, 1, 0, -1, -2
+---
+---  for x in range(4, 10, 2) do
+---    --
+---  end -- 4, 6, 8
 ---```
 ---@param sidx number
 ---@param eidx? number
