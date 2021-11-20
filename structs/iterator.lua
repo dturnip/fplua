@@ -221,4 +221,96 @@ function Iterator:filter(fn)
   return Iterator.from(buf)
 end
 
+---comment
+---@param fn any
+---@return boolean
+function Iterator:any(fn)
+  for k, v in self:iter() do
+    if v then
+      -- Hashmap iterator
+      if fn(k, v) == true then
+        return true
+      end
+    else
+      -- Array iterator
+      if fn(k) == true then
+        return true
+      end
+    end
+  end
+
+  return false
+end
+
+---comment
+---@param fn any
+---@return boolean
+function Iterator:every(fn)
+  for k, v in self:iter() do
+    if v then
+      -- Hashmap iterator
+      if fn(k, v) == false then
+        return false
+      end
+    else
+      -- Array iterator
+      if fn(k) == false then
+        return false
+      end
+    end
+  end
+
+  return true
+end
+
+function Iterator:foldl(fn, init)
+  if init == nil then
+    error("Argument <init> in Iterator:foldl(fn, init) is required", 2)
+  end
+
+  for k, v in self:iter() do
+    if v then
+      -- Hashmap iterator
+      init = fn(init, k, v)
+    else
+      -- Array iterator
+      init = fn(init, k)
+    end
+  end
+
+  return init
+end
+
+-- Test out the foldl method
+--
+-- print(Iterator.from({ 1, 2, 3, 4, 5 }):foldl(function(acc, x)
+--   return acc + x
+-- end, 0))
+--
+-- print(Iterator.from({ 2, 4, 5, 1, 8, 19, 6 }):foldl(function(max, x)
+--   return math.max(max, x)
+-- end, 0))
+--
+-- table.display(
+--   Iterator.from({ { 1, 3 }, { 2, 4 }, { 5, 6 } }):foldl(function(prev, curr)
+--     Iterator.from(curr):foreach(function(v)
+--       table.insert(prev, v)
+--     end)
+--
+--     return prev
+--   end, {})
+-- )
+--
+-- print()
+--
+-- local words = "The blue the chair table blue the green"
+--
+-- local split = {}
+--
+-- for word in words:gmatch("%a+") do
+--   table.insert(split, word)
+-- end
+--
+-- Iterator.from(split):foldl(function() end, {})
+
 return Iterator
