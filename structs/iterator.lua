@@ -297,36 +297,5 @@ function Iterator:foldl(fn, init)
   return init
 end
 
--- Test out the foldl method
---
--- print(Iterator.from({ 1, 2, 3, 4, 5 }):foldl(function(acc, x)
---   return acc + x
--- end, 0))
---
--- print(Iterator.from({ 2, 4, 5, 1, 8, 19, 6 }):foldl(function(max, x)
---   return math.max(max, x)
--- end, 0))
---
--- table.display(
---   Iterator.from({ { 1, 3 }, { 2, 4 }, { 5, 6 } }):foldl(function(prev, curr)
---     Iterator.from(curr):foreach(function(v)
---       table.insert(prev, v)
---     end)
---
---     return prev
---   end, {})
--- )
---
--- print()
---
--- local words = "The blue the chair table blue the green"
---
--- local split = {}
---
--- for word in words:gmatch("%a+") do
---   table.insert(split, word)
--- end
---
--- Iterator.from(split):foldl(function() end, {})
 
 return Iterator
