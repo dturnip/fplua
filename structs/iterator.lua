@@ -221,8 +221,16 @@ function Iterator:filter(fn)
   return Iterator.from(buf)
 end
 
----comment
----@param fn any
+---Checks each value of an Iterator with a boolean function until a check is passed and returns true. Otherwise, returns false.
+---```lua
+---  local xs = {1, 5, 6, 8, 12}
+---  local has_even = Iterator.from(xs)
+---    :any(function(x) return x % 2 == 0 end)
+---
+---  assert(has_even)
+---```
+---@generic K, V
+---@param fn fun(k: K, v: V | nil): boolean
 ---@return boolean
 function Iterator:any(fn)
   for k, v in self:iter() do
@@ -242,8 +250,16 @@ function Iterator:any(fn)
   return false
 end
 
----comment
----@param fn any
+--- Checks all values of an Iterator with a boolean function. If all checks pass, returns true.
+---```lua
+---  local words = { "turnip", "radish", "potato" }
+---  local all_six = Iterator.from(words)
+---    :every(function(s) return #s == 6 end)
+---
+---  assert(all_six)
+---```
+---@generic K, V
+---@param fn fun(k: K, v: V | nil): boolean
 ---@return boolean
 function Iterator:every(fn)
   for k, v in self:iter() do
