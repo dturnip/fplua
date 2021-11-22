@@ -1,24 +1,19 @@
 local Iterator = require("fplua.structs.iterator")
 
---- Returns an iterator of a numerical sequence with an interval. The starting point is included, and the ending point is excluded.
+local M = {}
+
+--- Returns an Iterator structure of a numerical sequence with an interval. The starting point is included and the ending point is excluded. For a generic-for iterator, see \`fplua.gens.range.range\`
 ---```lua
----  for x in range(4) do
----    --
----  end -- 1, 2, 3
+---  local xs = raw_range(10 + 1)
+---  local product = xs:foldl(function(acc, x) return acc * x end, 1)
 ---
----  for x in range(2, -3) do
----    --
----  end -- 2, 1, 0, -1, -2
----
----  for x in range(4, 10, 2) do
----    --
----  end -- 4, 6, 8
+---  assert(product == 3628800)
 ---```
----@param sidx number
----@param eidx? number
+---@param sidx? number
+---@param eidx number
 ---@param step? number
----@return fun(t: number[], k: number): number, number
-local function range(sidx, eidx, step)
+---@return Iterator
+function M.raw_range(sidx, eidx, step)
   local seq = {}
   if step == nil then
     -- Imply step
@@ -43,7 +38,29 @@ local function range(sidx, eidx, step)
     end
   end
 
-  return Iterator.from(seq):iter()
+  return Iterator.from(seq)
 end
 
-return range
+--- Returns an generic-for iterator of a numerical sequence with an interval. The starting point is included, and the ending point is excluded. Since Lua is 1 based, this function starts on ±1 if only one argument is passed. For an Iterator structure, see \`fplua.gens.range.raw_range\`
+---```lua
+---  for x in range(4) do
+---    --
+---  end -- 1, 2, 3
+---
+---  for x in range(2, -3) do
+---    --
+---  end -- 2, 1, 0, -1, -2
+---
+---  for x in range(4, 10, 2) do
+---    --
+---  end -- 4, 6, 8
+---```
+---@param sidx? number
+---@param eidx number
+---@param step? number
+---@return fun(t: number[], k: number): number, number
+function M.range(sidx, eidx, step)
+  return M.raw_range(sidx, eidx, step):iter()
+end
+
+return M
