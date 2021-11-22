@@ -279,6 +279,18 @@ function Iterator:every(fn)
   return true
 end
 
+--- Reduces an Iterator from left to right and returns an accumulated value.
+---```lua
+---  local raw_range = require("fplua.gens.range").raw_range
+---  local sum_ten = raw_range(10 + 1)
+---    :foldl(function(acc, x) return acc + x end, 0)
+---
+---  assert(sum_ten == 55)
+---```
+---@generic T
+---@param fn fun(acc: T, k: any, v: any | nil): T
+---@param init T
+---@return T
 function Iterator:foldl(fn, init)
   if init == nil then
     error("Argument <init> in Iterator:foldl(fn, init) is required", 2)
