@@ -309,5 +309,37 @@ function Iterator:foldl(fn, init)
   return init
 end
 
+--- Receives any number of arguments that are Iterators or Array tables and returns an Iterator where every n-th value contains every n-th value from all arguments. The length of the returned Iterator is the length of the shortest argument.
+---```lua
+---  local colours = { "red", "green", "blue" }
+---  local hex = { "FF0000", "00FF00", "0000FF" }
+---
+---  local tuples = Iterator.zip(colours, hex)
+---  --> Iterator{{"red", "FF0000"}, {"green", "00FF00"}, {"blue", "0000FF"}}
+---```
+---@vararg any[] | Iterator
+---@return Iterator
+function Iterator.zip(...)
+  local iters = { ... }
+
+  local groups = Iterator.from(iters):foldl(function(acc, x)
+    -- stylua: ignore
+    return getmetatable(x) == Iterator
+			and math.min(#x.obj, acc)
+      or math.min(#x, acc)
+  end, (getmetatable(iters[1]) == Iterator) and #iters[1].obj or #iters[1])
+
+  local zipped = {}
+
+  for i = 1, groups do
+    zipped[i] = {}
+    Iterator.from(iters):foreach(function(iter)
+      local val = getmetatable(iter) == Iterator and iter.obj[i] or iter[i]
+      table.insert(zipped[i], val)
+    end)
+  end
+
+  return Iterator.from(zipped)
+end
 
 return Iterator
