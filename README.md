@@ -8,7 +8,7 @@ fplua is an experimental pure Lua library introducing functional programming uti
 
 ## Getting Started
 
-Installation and Quick Start guide [here](https://github.com/dturnip/fplua/wiki/Getting-Started)
+Installation and Examples [here](https://github.com/dturnip/fplua/wiki/Getting-Started)
 
 ## Documentation
 
